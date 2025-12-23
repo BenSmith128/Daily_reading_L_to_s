@@ -5,7 +5,7 @@ WITH ws1 AS (
     O_num,
     REGEXP_REPLACE(V_raw, r'^\d+\s', '') AS Verse_KJV
   FROM
-    `w?s`
+    `w  --W?S, or short
   WHERE
     V_raw IS NOT NULL 
     AND V_raw != ''
@@ -23,9 +23,10 @@ ws2 AS (
             AS running_cw_sum
   FROM
     ws1
-)
+),
 
-SELECT
+sg AS (
+  SELECT
     CEIL(ws2.running_cw_sum / ((ws2.total_chars + ws2.total_words) / 14)) AS d,
     LEFT(wg.B_name, 1) AS b,
     wg.Ch_num AS c,
@@ -35,12 +36,27 @@ SELECT
     ws2.running_cw_sum,
     ((ws2.total_chars / 7 + ws2.total_words / 7) / 2) * CEIL(ws2.running_cw_sum / ((ws2.total_chars + ws2.total_words) / 14))
       AS daily_cw_target,
-    (ws2.total_chars + ws2.total_words) / 2 AS total_cw
+    (ws2.total_chars + ws2.total_words) / 2 AS total_cw,
+    ws2.O_num
+  FROM
+    ws2
+  LEFT JOIN
+    `w AS wg  --W?G, or guide
+    ON wg.Oal_v_n = ws2.O_num
+
+)
+
+SELECT
+  sg.d,
+  sg.b,
+  sg.c,
+  sg.v,
+  sg.Verse_KJV,
+  sg.cw_avg,
+  sg.O_num
 FROM
-  ws2
-LEFT JOIN
-  `w?g AS wg
-  ON wg.Oal_v_n = ws2.O_num
+  sg
 ORDER BY
-  d ASC,
-  ws2.cw_avg ASC;
+  sg.d ASC,
+  sg.cw_avg ASC,
+  sg.O_num ASC;
