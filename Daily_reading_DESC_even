@@ -5,6 +5,7 @@ WITH ws1 AS (
     O_num,
     REGEXP_REPLACE(V_raw, r'^\d+\s', '') AS Verse_KJV
   FROM
+    -- w?s as short
     `w?s`
   WHERE
     V_raw IS NOT NULL 
@@ -39,6 +40,7 @@ SELECT
 FROM
   ws2
 LEFT JOIN
+  -- w?g as guide
   `w?g AS wg
   ON wg.Oal_v_n = ws2.O_num
 ORDER BY
