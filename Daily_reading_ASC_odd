@@ -18,9 +18,9 @@ ws2 AS (
     ws1.O_num,
     (CHARACTER_LENGTH(ws1.Verse_KJV) + ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) / 2 AS cw_avg,
     SUM(CHARACTER_LENGTH(ws1.Verse_KJV)) OVER () AS total_chars,
-        SUM(ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) OVER () AS total_words,
-        SUM((CHARACTER_LENGTH(ws1.Verse_KJV) + ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) / 2) OVER (ORDER BY (CHARACTER_LENGTH(ws1.Verse_KJV) + ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) / 2 ASC) 
-            AS running_cw_sum
+    SUM(ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) OVER () AS total_words,
+    SUM((CHARACTER_LENGTH(ws1.Verse_KJV) + ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) / 2) OVER (ORDER BY (CHARACTER_LENGTH(ws1.Verse_KJV) + ARRAY_LENGTH(SPLIT(REGEXP_REPLACE(TRIM(ws1.Verse_KJV), r'\s+', ' '), ' '))) / 2 ASC) 
+      AS running_cw_sum
   FROM
     ws1
 ),
@@ -34,7 +34,6 @@ ws3 AS (
     (ws2.total_chars + ws2.total_words) / 2 AS total_cw
   FROM
     ws2
-
 ),
 
 sg AS (
