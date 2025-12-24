@@ -70,4 +70,4 @@ LEFT JOIN
 ORDER BY
   ws3.d ASC,
   ws2.cw_avg ASC,
-  ws1.O_num ASC
+  ws1.O_num ASC;
