@@ -37,6 +37,7 @@ VerseTotals AS (
 )
 
 SELECT 
+  1 AS ch_n, --change for every chapter
   v_n, 
   verse_line, 
   L_n, 
