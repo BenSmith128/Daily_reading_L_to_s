@@ -1,0 +1,48 @@
+# Listing verses of the Song of Solomon (ESV) with some key metrics
+# I'll combine and further edit them with another file
+
+WITH RawData AS (
+  SELECT 
+    L_id,
+    SAFE_CAST(REGEXP_EXTRACT(v_raw, r'^\d+') AS INT64) AS found_verse,
+    TRIM(REGEXP_REPLACE(v_raw, r'^\d+\s*', '')) AS verse_line
+  FROM `Royal_Rangers.c1` --chapter you're working on
+),
+
+FilledVerses AS (
+  SELECT 
+    *,
+    LAST_VALUE(found_verse IGNORE NULLS) OVER (ORDER BY L_id) AS v_n
+  FROM RawData
+),
+
+LineMetrics AS (
+  SELECT 
+    v_n,
+    FilledVerses.verse_line,
+    ROW_NUMBER() OVER (PARTITION BY v_n ORDER BY L_id) AS L_n,
+    LENGTH(FilledVerses.verse_line) AS L_ch,
+    ARRAY_LENGTH(REGEXP_EXTRACT_ALL(FilledVerses.verse_line, r'\w+')) AS L_w,
+    L_id
+  FROM FilledVerses
+  WHERE ARRAY_LENGTH(REGEXP_EXTRACT_ALL(FilledVerses.verse_line, r'\w+')) >= 2
+),
+
+VerseTotals AS (
+  SELECT 
+    *,
+    SUM(L_ch) OVER (PARTITION BY v_n) AS v_ch,
+    SUM(L_w) OVER (PARTITION BY v_n) AS v_w
+  FROM LineMetrics
+)
+
+SELECT 
+  v_n, 
+  verse_line, 
+  L_n, 
+  L_ch, 
+  v_ch, 
+  L_w, 
+  v_w
+FROM VerseTotals
+ORDER BY v_n ASC, L_n ASC;

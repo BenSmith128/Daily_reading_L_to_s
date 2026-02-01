@@ -1,7 +1,0 @@
-SELECT
-  Vehicle_model,
-  COUNT(Vehicle_model) AS vcount
-FROM `mechanic_work.23_10_to_12_Vehicle_Data_From_Work_Orders`
-GROUP BY Vehicle_model
-ORDER BY vcount DESC
-LIMIT 6;
