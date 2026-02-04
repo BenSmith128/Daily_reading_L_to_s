@@ -1,0 +1,17 @@
+# Sort dates by work week
+
+SELECT 
+  ROW_NUMBER() OVER(ORDER BY DATE_TRUNC(date_column, WEEK(WEDNESDAY))) AS week_number,
+  DATE_TRUNC(date_column, WEEK(WEDNESDAY)) AS week_starts,
+  LEAST(
+    DATE_ADD(DATE_TRUNC(date_column, WEEK(WEDNESDAY)), INTERVAL 6 DAY),
+    LAST_DAY(date_column, MONTH)
+  ) AS week_ends,
+  -- Now counts every unique date present in your data for that week
+  COUNT(DISTINCT date_column) AS active_days,
+  -- Keep the earnings sum (vacation days will naturally sum to $0 if no hours/dollars were logged)
+  SUM(COALESCE(dollars, hours * 10, 0)) AS total_earnings
+FROM `your_project.your_dataset.your_table`
+WHERE date_column BETWEEN '2026-01-01' AND '2026-01-31'
+GROUP BY 2, 3
+ORDER BY week_number
